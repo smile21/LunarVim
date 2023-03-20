@@ -70,7 +70,7 @@ local function jumpable(dir)
       local n_next = node.next
       local next_pos = n_next and n_next.mark:pos_begin()
       local candidate = n_next ~= snippet and next_pos and (pos[1] < next_pos[1])
-        or (pos[1] == next_pos[1] and pos[2] < next_pos[2])
+          or (pos[1] == next_pos[1] and pos[2] < next_pos[2])
 
       -- Past unmarked exit node, exit early
       if n_next == nil or n_next == snippet.next then
@@ -207,7 +207,7 @@ M.config = function()
         end
         vim_item.menu = lvim.builtin.cmp.formatting.source_names[entry.source.name]
         vim_item.dup = lvim.builtin.cmp.formatting.duplicates[entry.source.name]
-          or lvim.builtin.cmp.formatting.duplicates_default
+            or lvim.builtin.cmp.formatting.duplicates_default
         return vim_item
       end,
     },
@@ -295,14 +295,19 @@ M.config = function()
       },
       ["<Tab>"] = cmp.mapping(function(fallback)
         if cmp.visible() then
-          cmp.select_next_item()
+          local entry = cmp.get_selected_entry()
+          if not entry then
+            cmp.select_next_item()
+          else
+            cmp.confirm { behavior = cmp.ConfirmBehavior.Replace, select = false }
+          end
         elseif luasnip.expand_or_locally_jumpable() then
           luasnip.expand_or_jump()
         elseif jumpable(1) then
           luasnip.jump(1)
         elseif has_words_before() then
-          -- cmp.complete()
-          fallback()
+          cmp.complete()
+          -- fallback()
         else
           fallback()
         end
@@ -325,7 +330,8 @@ M.config = function()
             return vim.api.nvim_get_mode().mode:sub(1, 1) == "i"
           end
           if is_insert_mode() then -- prevent overwriting brackets
-            confirm_opts.behavior = cmp.ConfirmBehavior.Insert
+            -- confirm_opts.behavior = cmp.ConfirmBehavior.Insert
+            confirm_opts.behavior = cmp.ConfirmBehavior.Replace
           end
           if cmp.confirm(confirm_opts) then
             return -- success, exit early
