@@ -246,8 +246,8 @@ M.config = function()
             "+",
             "?",
             " ",
-            -- "\t",
-            -- "\n",
+            "\t",
+            "\n",
           },
         },
       },
@@ -303,8 +303,8 @@ M.config = function()
           end
         elseif luasnip.expand_or_locally_jumpable() then
           luasnip.expand_or_jump()
-        elseif jumpable(1) then
-          luasnip.jump(1)
+          -- elseif jumpable(1) then
+          --   luasnip.jump(1)
         elseif has_words_before() then
           cmp.complete()
           -- fallback()
@@ -332,6 +332,7 @@ M.config = function()
           if is_insert_mode() then -- prevent overwriting brackets
             -- confirm_opts.behavior = cmp.ConfirmBehavior.Insert
             confirm_opts.behavior = cmp.ConfirmBehavior.Replace
+            confirm_opts.select = false
           end
           if cmp.confirm(confirm_opts) then
             return -- success, exit early
